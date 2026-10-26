@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Just Groove</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   JUST GROOVE — styles (old-school DVD menu look)
+   ============================================================ */
+:root{
+  --deep:#020a3d; --gold:#ffd84a; --pink:#ff6fb5;
+  --font:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  --script:'Pacifico','Brush Script MT',cursive;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--deep);color:#fff;font-family:var(--font);user-select:none}
+
+/* ---------- animated blue background ---------- */
+#bg{position:fixed;inset:0;z-index:0;overflow:hidden;
+  background:radial-gradient(ellipse at 28% 38%,#3a78ff 0%,#0d38c2 32%,#071d80 62%,#020a3d 100%)}
+#bg svg{position:absolute;inset:-8%;width:116%;height:116%;animation:drift 20s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-3%,2%) rotate(-2deg)}}
+#bg .glint{position:absolute;left:-8vw;top:-10vh;width:45vw;height:45vw;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.55),rgba(160,200,255,.15) 35%,transparent 65%);animation:pulse 6s ease-in-out infinite alternate}
+@keyframes pulse{to{opacity:.6;transform:scale(1.08)}}
+.streak{position:absolute;left:0;border-radius:2px;opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);animation:zip linear infinite}
+@keyframes zip{0%{transform:translateX(-50vw);opacity:0}12%{opacity:.85}85%{opacity:.5}100%{transform:translateX(115vw);opacity:0}}
+
+.screen{position:fixed;inset:0;z-index:1;display:none}
+.screen.active{display:block}
+
+/* ---------- logo ---------- */
+.logo{position:relative;display:flex;flex-direction:column;align-items:center;padding:4vh 6vw}
+.disc-wrap{position:absolute;inset:0;display:grid;place-items:center;transform:rotate(-10deg);pointer-events:none}
+.disc{width:min(560px,78vw);aspect-ratio:1;border-radius:50%;
+  background:
+    radial-gradient(circle,#dfe6ff 0 5%,transparent 5.5% 14%,rgba(255,255,255,.55) 14.5% 15.5%,transparent 16% 100%),
+    conic-gradient(#ff7ad9,#ffd36e,#8affc1,#6ec8ff,#b28cff,#ff7ad9);
+  box-shadow:0 0 50px rgba(140,190,255,.8);opacity:.9;animation:spin 7s linear infinite}
+@keyframes spin{from{transform:scaleY(.36) rotate(0)}to{transform:scaleY(.36) rotate(360deg)}}
+.just{position:relative;font-family:var(--script);font-size:clamp(46px,7.5vw,104px);transform:rotate(-7deg) translateX(-18%);
+  margin-bottom:-.45em;text-shadow:0 4px 0 #0a1f7a,0 0 22px rgba(140,190,255,.9)}
+.chrome{padding:0 .14em 0 .04em;margin:0 -.14em 0 -.04em;  /* room for the italic overhang so the fill isn't cut off */
+  background:linear-gradient(180deg,#fff 0%,#eef3ff 40%,#9fb4f0 52%,#fff 70%,#cfdaff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:2px #1d3fb0;
+  filter:drop-shadow(0 4px 0 #071a6b) drop-shadow(0 0 18px rgba(140,190,255,.8))}
+.groove{position:relative;font-weight:700;font-style:italic;font-size:clamp(68px,12vw,168px);line-height:1;letter-spacing:-.01em}
+
+/* ---------- glossy pill buttons ---------- */
+.pill{display:inline-flex;align-items:center;gap:.55em;padding:.38em 1.3em;border-radius:999px;
+  font-weight:700;font-style:italic;font-size:clamp(20px,2.4vw,32px);white-space:nowrap;
+  background:linear-gradient(180deg,#d98cff 0%,#8a3fd6 48%,#6a22b8 52%,#b45cf0 100%);
+  border:2px solid rgba(255,255,255,.75);text-shadow:0 2px 0 #3a0f6e;
+  box-shadow:inset 0 2px 6px rgba(255,255,255,.6),0 4px 14px rgba(0,0,30,.55);transition:transform .2s,background .2s}
+.arrow{width:0;height:0;border-top:.42em solid transparent;border-bottom:.42em solid transparent;
+  border-right:.65em solid var(--gold);opacity:0;filter:drop-shadow(0 0 4px var(--gold))}
+.sel .pill{background:linear-gradient(180deg,#ffb8e2 0%,#ff4fa6 48%,#e02b85 52%,#ff8cc8 100%);transform:scale(1.07)}
+.sel .arrow{opacity:1;animation:nudge .5s ease-in-out infinite alternate}
+@keyframes nudge{to{transform:translateX(-6px)}}
+
+/* ---------- intro ---------- */
+#intro .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(18px,6vh,64px)}
+.opts{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(20px,9vw,150px)}
+.opt{cursor:pointer}
+
+/* ---------- splash (first screen) ---------- */
+.splash{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(16px,4vh,34px);cursor:pointer}
+.sp-disc .disc{width:clamp(90px,14vw,150px);animation:spinflat 1.6s linear infinite}
+@keyframes spinflat{to{transform:rotate(360deg)}}
+.sp-title{display:flex;align-items:baseline;gap:.3em;font-weight:600;font-size:clamp(22px,3vw,38px)}
+.sp-title .j{font-family:var(--script);font-size:1.15em;text-shadow:0 3px 0 #0a1f7a}
+.sp-title .g{font-weight:700;font-style:italic;font-size:1.5em;-webkit-text-stroke:1.5px #1d3fb0}
+.sp-bar{width:min(420px,70vw);height:12px;border-radius:999px;background:rgba(0,10,60,.5);border:1px solid rgba(255,255,255,.4);overflow:hidden}
+#spFill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .25s}
+.sp-prompt{font-size:clamp(18px,2.2vw,28px);font-weight:600;opacity:0}
+.splash.ready .sp-prompt{animation:breathe 1.1s ease-in-out infinite alternate}
+@keyframes breathe{from{opacity:.95}to{opacity:.4}}
+.bottom-hint{position:absolute;bottom:clamp(12px,3vh,28px);left:0;right:0;display:flex;justify-content:center;align-items:center;gap:28px;font-size:clamp(14px,1.4vw,18px);opacity:.9}
+.ctrl-chip{display:inline-flex;align-items:center;gap:8px;padding:4px 14px;border-radius:999px;background:rgba(0,10,60,.5);border:1px solid rgba(255,255,255,.3)}
+.ctrl-chip i{width:10px;height:10px;border-radius:50%;background:#ff5a6e;box-shadow:0 0 8px #ff5a6e}
+.ctrl-chip.on i{background:#5dff9b;box-shadow:0 0 8px #5dff9b}
+
+/* ---------- menu ---------- */
+.menu-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding:clamp(10px,2.4vh,26px) clamp(16px,4vw,48px)}
+.mini{display:flex;align-items:baseline;gap:.15em}
+.mini .j{font-family:var(--script);font-size:clamp(20px,2.4vw,32px);text-shadow:0 3px 0 #0a1f7a}
+.mini .g{font-weight:700;font-style:italic;font-size:clamp(28px,3.4vw,46px);-webkit-text-stroke:1.5px #1d3fb0}
+.stats{display:flex;gap:10px}
+.stat{min-width:86px;padding:6px 14px;border-radius:16px;text-align:center;line-height:1.15;
+  background:rgba(0,10,60,.45);border:1px solid rgba(255,255,255,.3)}
+.stat b{display:block;font-size:clamp(20px,2.2vw,28px);color:var(--gold)}
+.stat span{font-size:11px;opacity:.85;text-transform:uppercase;letter-spacing:.08em}
+
+.menu-list{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:min(900px,92vw);
+  display:flex;flex-direction:column;gap:clamp(6px,2vh,22px)}
+.row{position:relative;display:flex;align-items:center;gap:clamp(16px,3vw,40px);cursor:pointer;
+  padding:clamp(6px,1.3vh,14px) clamp(12px,2vw,24px);border-radius:24px;transition:transform .25s}
+.row::before{content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .25s;
+  background:linear-gradient(90deg,rgba(255,255,255,.2),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.4)}
+.row.sel{transform:scale(1.03)}
+.row.sel::before{opacity:1}
+.stamp-wrap{flex:none;position:relative;transition:filter .25s,transform .25s}
+.row.sel .stamp-wrap{transform:rotate(-2deg);filter:drop-shadow(0 0 8px var(--gold)) drop-shadow(0 0 20px rgba(255,216,74,.6))}
+/* postage-stamp frame with perforated edges, like the Blu-ray menu */
+.stamp{--r:5px;width:clamp(130px,min(22vw,28vh),320px);aspect-ratio:16/10;padding:calc(var(--r)*2);background:#fdfdf6;
+  -webkit-mask:linear-gradient(#000 0 0) center/calc(100% - 2*var(--r)) calc(100% - 2*var(--r)) no-repeat,
+    radial-gradient(circle var(--r),#0000 97%,#000) calc(-1.5*var(--r)) calc(-1.5*var(--r))/calc(3*var(--r)) calc(3*var(--r)) round;
+  mask:linear-gradient(#000 0 0) center/calc(100% - 2*var(--r)) calc(100% - 2*var(--r)) no-repeat,
+    radial-gradient(circle var(--r),#0000 97%,#000) calc(-1.5*var(--r)) calc(-1.5*var(--r))/calc(3*var(--r)) calc(3*var(--r)) round}
+.thumb{position:relative;width:100%;height:100%;overflow:hidden;background:#000}
+.thumb .ph{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;font-size:clamp(34px,4vw,60px);
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.45),transparent 50%),linear-gradient(135deg,var(--c),#2a1a8a)}
+.thumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.thumb video.missing{display:none}
+.num{position:absolute;left:-6px;top:-8px;z-index:2;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  font-weight:700;font-size:16px;background:var(--gold);color:#3a2400;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.info{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0}
+.artist{font-size:clamp(13px,1.3vw,17px);opacity:.85;padding-left:.6em}
+.meta{display:flex;gap:14px;align-items:center;font-size:clamp(13px,1.3vw,17px);padding-left:.6em}
+.stars{color:var(--gold);letter-spacing:2px}
+.pts{padding:2px 10px;border-radius:999px;background:rgba(255,216,74,.18);border:1px solid rgba(255,216,74,.5)}
+.pts.done{background:rgba(93,255,155,.15);border-color:rgba(93,255,155,.55)}
+
+/* ---------- locked "Coming Soon" songs ---------- */
+.row.locked{cursor:default}
+.row.locked .info{opacity:.75}
+.row.locked .pill{gap:.45em;color:#f2f3fb;text-shadow:0 2px 0 #2e3160;
+  background:linear-gradient(180deg,#a3a8c8 0%,#6b7099 48%,#555a85 52%,#8b90b5 100%);border-color:rgba(255,255,255,.4)}
+.row.locked.sel .pill{background:linear-gradient(180deg,#c3c7e2 0%,#868bb4 48%,#6f74a2 52%,#a8acd0 100%);transform:scale(1.05)}
+.row.locked .num{background:#9ea3c4;color:#2a2d4d}
+.lock{width:.8em;height:.88em;flex:none;color:#e8eaf8}
+.row.nope{animation:nope .35s}
+@keyframes nope{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.thumb{container-type:inline-size}
+.soon{position:absolute;inset:0;overflow:hidden;
+  background:radial-gradient(ellipse at 22% 25%,#2a3bd6 0%,transparent 55%),radial-gradient(ellipse at 75% 85%,#0b1680 0%,transparent 60%),#1729b8}
+.soon .sb{position:absolute;filter:blur(5px);opacity:.85}
+.soon .sb1{left:32%;top:36%;width:34%;height:30%;background:linear-gradient(90deg,#c9853c,#e4a75a,#b06a2e)}
+.soon .sb2{right:-4%;top:-10%;width:22%;height:80%;background:linear-gradient(180deg,#f07aa8,#c75c9a 60%,#5a3fb8)}
+.soon .sb3{left:-6%;bottom:6%;width:85%;height:20%;background:linear-gradient(90deg,transparent,rgba(170,170,210,.55) 40%,rgba(230,190,150,.6))}
+.soon-t{position:absolute;left:6%;top:10%;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:300;
+  font-size:13.5cqw;letter-spacing:0;white-space:nowrap;color:rgba(255,255,255,.12);
+  -webkit-text-stroke:.7px rgba(255,255,255,.95);text-shadow:0 0 6px rgba(200,220,255,.75)}
+.soon-s{position:absolute;left:0;bottom:11%;width:100%;overflow:hidden;white-space:nowrap}
+.soon-s b{display:inline-block;padding-left:7%;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:400;
+  font-size:5.6cqw;letter-spacing:.14em;color:transparent;-webkit-text-stroke:.6px rgba(255,255,255,.9);
+  text-shadow:-6px 0 3px rgba(255,255,255,.25),-12px 0 5px rgba(255,255,255,.15);animation:soonSlide 4s ease-in-out infinite}
+@keyframes soonSlide{0%{transform:translateX(-30%);opacity:0;filter:blur(2px)}25%,75%{transform:none;opacity:1;filter:none}100%{transform:translateX(12%);opacity:0;filter:blur(2px)}}
+
+.menu-foot{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding:clamp(10px,2.4vh,24px) clamp(16px,4vw,48px);font-size:clamp(13px,1.35vw,18px)}
+.keys{display:flex;gap:18px;align-items:center}
+
+/* ---------- player: glowing vintage screen (shape from screen_overlay_illustration.svg) ---------- */
+#player{z-index:3;background:transparent}
+.tv-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+/* screen size: about 84% of the window, keeping the drawing's proportions */
+.tv{--sh:min(82vh,calc(86vw / 1.3826));position:relative;height:var(--sh);aspect-ratio:335.159/242.408}
+.tv-screen{position:absolute;inset:0;clip-path:url(#screenClip);background:rgba(20,18,32,.85)}
+#video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:transparent}
+.tv-glow{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.tv-glow .halo{animation:hum 3.2s ease-in-out infinite alternate}
+@keyframes hum{from{opacity:.85}to{opacity:1}}
+.power{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:4}
+.beam{position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:#fff;transform:scale(0,1);
+  box-shadow:0 0 10px #cfe6ff,0 0 26px #8fb8ff}
+#player .bottom-hint{bottom:clamp(8px,2vh,20px)}
+.confirm{position:absolute;left:50%;top:50%;z-index:5;transform:translate(-50%,-50%) scale(.9);opacity:0;pointer-events:none;
+  padding:1em 1.8em;border-radius:1em;text-align:center;font-size:calc(var(--sh)*.04);transition:.2s;white-space:nowrap;
+  background:rgba(10,24,110,.88);border:2px solid rgba(255,255,255,.5);box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.confirm small{font-size:.55em;opacity:.8}
+.confirm.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* ---------- results ---------- */
+.card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,92vw);text-align:center;
+  padding:clamp(20px,4vh,38px) clamp(20px,4vw,44px);border-radius:28px;
+  background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.06));border:2px solid rgba(255,255,255,.45);
+  box-shadow:0 20px 60px rgba(0,0,30,.5),inset 0 1px 0 rgba(255,255,255,.5);backdrop-filter:blur(8px)}
+.res-head{font-family:var(--script);font-size:clamp(40px,6vw,66px);line-height:1.2;text-shadow:0 4px 0 #0a1f7a,0 0 24px rgba(140,190,255,.9)}
+#resSong{font-size:clamp(16px,1.8vw,22px);opacity:.9}
+#resLines{list-style:none;margin:16px 0 6px;text-align:left}
+#resLines li{display:flex;justify-content:space-between;padding:8px 4px;font-size:clamp(16px,1.8vw,21px);
+  border-bottom:1px dashed rgba(255,255,255,.3);opacity:0;animation:pop .35s forwards}
+#resLines b{color:var(--gold)}
+.res-total{font-weight:700;font-size:clamp(50px,7vw,84px);color:var(--gold);text-shadow:0 4px 0 #8a5a00,0 0 30px rgba(255,216,74,.6)}
+.res-sub{margin-bottom:18px;font-size:clamp(15px,1.6vw,20px)}
+.res-tip{margin-top:14px;font-size:14px;opacity:.8}
+
+/* ---------- subtle mute button ---------- */
+.ctrl-hint{opacity:.6}
+.crown{display:inline-block;width:1.15em;height:.96em;vertical-align:-.12em;margin:0 .08em;filter:drop-shadow(0 1px 0 rgba(0,0,30,.35))}
+.stat b span{font-size:inherit;opacity:1;text-transform:none;letter-spacing:normal}
+.stat b .crown{width:.95em;height:.8em;margin-left:.18em;vertical-align:-.05em}
+.res-total .crown{margin-left:.12em;vertical-align:-.04em}  /* same subtlety as the resting mute button; no hover change */
+.mute-btn{display:inline-grid;place-items:center;width:clamp(42px,4vw,52px);height:clamp(42px,4vw,52px);padding:0;border-radius:50%;color:#fff;
+  opacity:.6;background:rgba(0,10,60,.3);border:1px solid rgba(255,255,255,.25);cursor:pointer;transition:opacity .2s,background .2s,transform .2s}
+.mute-btn:hover,.mute-btn:focus-visible{opacity:1;background:rgba(0,10,60,.55);transform:scale(1.06);outline:none}
+.mute-btn svg{width:62%;height:62%}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:12vh;z-index:10;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  max-width:90vw;padding:12px 26px;border-radius:999px;text-align:center;font-size:clamp(15px,1.6vw,20px);
+  background:rgba(5,15,70,.92);border:1px solid rgba(255,255,255,.4);transition:.3s}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-height:560px){ .artist{display:none} }
+</style>
+</head>
+<body>
+
+<!-- Custom crown icon, drawn once and reused everywhere with <use href="#crown"> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="crownGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff7b8"/><stop offset=".45" stop-color="#ffd84a"/><stop offset="1" stop-color="#e39a12"/>
+    </linearGradient>
+    <symbol id="crown" viewBox="0 0 24 20">
+      <path d="M2.2 6.2 7.2 11 12 3.4 16.8 11l5-4.8-2 9.8H4.2z" fill="url(#crownGold)" stroke="#7a4d00" stroke-width="1.3" stroke-linejoin="round"/>
+      <rect x="4" y="15.6" width="16" height="3.2" rx="1.2" fill="url(#crownGold)" stroke="#7a4d00" stroke-width="1.3"/>
+      <circle cx="2.2" cy="5.6" r="1.6" fill="#fff1a0" stroke="#7a4d00" stroke-width="1"/>
+      <circle cx="12" cy="2.6" r="1.8" fill="#fff1a0" stroke="#7a4d00" stroke-width="1"/>
+      <circle cx="21.8" cy="5.6" r="1.6" fill="#fff1a0" stroke="#7a4d00" stroke-width="1"/>
+      <circle cx="12" cy="12.2" r="1.7" fill="#ff5fae" stroke="#7a1d4f" stroke-width=".8"/>
+      <circle cx="7.4" cy="13.4" r="1.1" fill="#5ad1ff" stroke="#11507a" stroke-width=".7"/>
+      <circle cx="16.6" cy="13.4" r="1.1" fill="#5ad1ff" stroke="#11507a" stroke-width=".7"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- Shared background -->
+<div id="bg">
+  <div class="glint"></div>
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="sw" x1="0" x2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+        <stop offset=".5" stop-color="#fff" stop-opacity=".6"/>
+        <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <ellipse cx="320" cy="420" rx="560" ry="320" fill="#86b6ff" opacity=".12"/>
+    <path d="M-100 250 C 400 110, 900 430, 1700 120" fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="110"/>
+    <path d="M-100 640 C 300 400, 760 880, 1700 300" fill="none" stroke="url(#sw)" stroke-width="3"/>
+    <path d="M-100 700 C 380 470, 820 920, 1700 400" fill="none" stroke="url(#sw)" stroke-width="1.5"/>
+    <path d="M140 -60 C 520 300, 260 620, 900 960" fill="none" stroke="url(#sw)" stroke-width="2"/>
+    <circle cx="1360" cy="780" r="270" fill="none" stroke="#fff" stroke-opacity=".1" stroke-width="44"/>
+    <circle cx="1360" cy="780" r="190" fill="none" stroke="#fff" stroke-opacity=".06" stroke-width="16"/>
+  </svg>
+  <div id="streaks"></div>
+</div>
+
+<!-- 0. SPLASH (loading + press Enter; this key press also unlocks the music) -->
+<section id="splash" class="screen active">
+  <div class="splash">
+    <div class="sp-disc"><div class="disc"></div></div>
+    <div class="sp-title">Loading <span class="j">Just</span><span class="g chrome">Groove</span></div>
+    <div class="sp-bar"><div id="spFill"></div></div>
+    <div class="sp-prompt">● Please press Enter</div>
+  </div>
+</section>
+
+<!-- 1. INTRO (like the "FastPlay" screen) -->
+<section id="intro" class="screen">
+  <div class="center">
+    <div class="logo">
+      <div class="disc-wrap"><div class="disc"></div></div>
+      <div class="just">Just</div>
+      <div class="groove chrome">Groove</div>
+    </div>
+    <div class="opts">
+      <div class="opt" data-i="0"><span class="pill"><span id="connectLabel">Connect Buttons</span><i class="arrow"></i></span></div>
+      <div class="opt sel" data-i="1"><span class="pill">Start Grooving<i class="arrow"></i></span></div>
+    </div>
+  </div>
+  <div class="bottom-hint">
+    <span class="ctrl-hint">▲ ▼ Up / Down to move &nbsp;·&nbsp; ● Enter to select</span>
+    <button class="mute-btn" type="button"></button>
+  </div>
+</section>
+
+<!-- 2. MAIN MENU (like the Blu-ray stamp menu) -->
+<section id="menu" class="screen">
+  <header class="menu-top">
+    <div class="mini"><span class="j">Just</span><span class="g chrome">Groove</span></div>
+    <div class="stats">
+      <div class="stat"><b><span id="statPoints">0</span><svg class="crown" aria-hidden="true"><use href="#crown"/></svg></b><span>Crowns</span></div>
+      <div class="stat"><b id="statStreak">0</b><span>Streak</span></div>
+      <div class="stat"><b id="statToday">0/3</b><span>Completed</span></div>
+    </div>
+  </header>
+  <main class="menu-list" id="menuList"></main>
+  <footer class="menu-foot">
+    <div class="keys">
+      <span class="ctrl-hint">▲ ▼ Up / Down to move &nbsp;·&nbsp; ● Enter to select</span>
+      <button class="mute-btn" type="button"></button>
+    </div>
+  </footer>
+</section>
+
+<!-- 3. VIDEO PLAYER (glowing vintage screen) -->
+<section id="player" class="screen">
+  <div class="tv-stage">
+    <div class="tv" id="tv">
+      <div class="tv-screen">
+        <video id="video" playsinline preload="auto"></video>
+        <div class="power" id="power"><div class="beam" id="beam"></div></div>
+        <div id="exitConfirm" class="confirm">Press <b>ENTER</b> again to exit<br><small>You only earn crowns if you finish the song</small></div>
+      </div>
+      <!-- glowing edge: solid bright line, light spilling outward only -->
+      <svg class="tv-glow" viewBox="26.237 43.11 335.159 242.408" aria-hidden="true">
+        <defs>
+          <path id="screenPath" d="M43.81,52.12c-3.26.91-8.84,2.82-12.83,7.81-3.72,4.65-4.72,10-4.74,13.39-.22,40.47,11.67,165.81,23.52,196.33.32.82-1.31-3.15,0,0,.88,2.1,4.37,9.84,21.23,12.77,28.86,5.02,239.15,2.29,250.65,2.85.24.01-1.08.09,0,0,11.98-1.01,18.39-10.77,19.72-14.36,14.21-38.54,18.18-180.68,19.96-200.15.62-6.79-2.73-11.41-3.13-12.02-3.51-5.36-11.74-8.45-17.17-9.35-57.48-9.45-258.8-7.99-297.19,2.73Z"/>
+          <clipPath id="screenClip" clipPathUnits="objectBoundingBox">
+            <path d="M43.81,52.12c-3.26.91-8.84,2.82-12.83,7.81-3.72,4.65-4.72,10-4.74,13.39-.22,40.47,11.67,165.81,23.52,196.33.32.82-1.31-3.15,0,0,.88,2.1,4.37,9.84,21.23,12.77,28.86,5.02,239.15,2.29,250.65,2.85.24.01-1.08.09,0,0,11.98-1.01,18.39-10.77,19.72-14.36,14.21-38.54,18.18-180.68,19.96-200.15.62-6.79-2.73-11.41-3.13-12.02-3.51-5.36-11.74-8.45-17.17-9.35-57.48-9.45-258.8-7.99-297.19,2.73Z" transform="scale(0.00298366 0.00412528) translate(-26.237 -43.11)"/>
+          </clipPath>
+          <mask id="outsideOnly" maskUnits="userSpaceOnUse" x="-100" y="-100" width="600" height="500">
+            <rect x="-100" y="-100" width="600" height="500" fill="#fff"/>
+            <use href="#screenPath" fill="#000"/>
+          </mask>
+          <filter id="blurWide" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
+          <filter id="blurMid"  x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter>
+          <filter id="blurSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation=".6"/></filter>
+        </defs>
+        <g class="halo" mask="url(#outsideOnly)" fill="none">
+          <use href="#screenPath" stroke="#8fc2ff" stroke-width="22" opacity=".45" filter="url(#blurWide)"/>
+          <use href="#screenPath" stroke="#dcecff" stroke-width="8" opacity=".7" filter="url(#blurMid)"/>
+        </g>
+        <use href="#screenPath" fill="none" stroke="#eef5ff" stroke-width="4" filter="url(#blurSoft)"/>
+        <use href="#screenPath" fill="none" stroke="#fff" stroke-width="2.2"/>
+      </svg>
+    </div>
+  </div>
+  <div class="bottom-hint"><span class="ctrl-hint">● Enter to exit</span></div>
+</section>
+
+<!-- 4. RESULTS -->
+<section id="results" class="screen">
+  <div class="card">
+    <div class="res-head">Nice Groove!</div>
+    <div id="resSong"></div>
+    <ul id="resLines"></ul>
+    <div class="res-total">+<span id="resGain">0</span><svg class="crown" aria-hidden="true"><use href="#crown"/></svg></div>
+    <div class="res-sub">Total <b id="resTotal">0</b> <svg class="crown" aria-hidden="true"><use href="#crown"/></svg> crowns &nbsp;·&nbsp; 🔥 <b id="resStreak">0</b>-day streak</div>
+    <div class="sel"><span class="pill">Main Menu<i class="arrow"></i></span></div>
+    <p class="res-tip" id="resTip"></p>
+  </div>
+  <div class="bottom-hint"><button class="mute-btn" type="button"></button></div>
+</section>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   CONFIG — edit these to match your videos
+   Put your files in a "videos" folder next to this HTML file.
+   ============================================================ */
+const VIDEOS = [
+  { id:'song1', title:'Sunshine, Lollipops and Rainbows',   artist:'Choreo by Eve Nepo', file:'videos/testVid1.mp4', thumb:'', previewAt:5, difficulty:1, points:100, color:'#ff6fb5' },
+  { id:'song2', title:'Song Two',   artist:'Choreo by you', file:'videos/song2.mp4', thumb:'', previewAt:5, difficulty:2, points:150, color:'#ffb347', comingSoon:true },
+  { id:'song3', title:'Song Three', artist:'Choreo by you', file:'videos/song3.mp4', thumb:'', previewAt:5, difficulty:3, points:200, color:'#5ad1ff', comingSoon:true },
+];
+// comingSoon:true locks a song and shows a "Coming Soon" card. Delete it once that video is ready.
+// thumb: optional image path (e.g. 'videos/song1.jpg'). If blank, a frame of the video at `previewAt` seconds is used.
+
+const S = {
+  baudRate: 9600,          // must match Serial.begin() in the Arduino sketch
+  dailyBonus: 50,          // first finished song of the day
+  streakBonusPerDay: 10,   // extra per consecutive day (on the first song each day)
+  streakBonusCap: 10,      // max days counted for the streak bonus
+  allDoneBonus: 150,       // finishing every song in one day
+  replayFraction: 0.25,    // replays the same day earn 25% of the song's points
+  exitConfirmMs: 3000,     // press ENTER twice within this window to exit (set 0 for single press)
+  previewSeconds: 8,       // length of the looping muted preview on the menu
+  musicVolume: 0.45,       // background music level, 0 to 1 (0 = off)
+  resultsAutoReturnSec: 15,
+};
+
+/* ============================================================
+   SAVED PROGRESS (stored in the browser, survives restarts)
+   ============================================================ */
+const STORE = 'justgroove.v1';
+const fresh = () => ({ points:0, streak:0, bestStreak:0, lastDay:null, doneToday:[], plays:{} });
+let state = (() => { try { return Object.assign(fresh(), JSON.parse(localStorage.getItem(STORE)) || {}); } catch { return fresh(); } })();
+const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {} };
+const dayKey = (d = new Date()) => d.toLocaleDateString('en-CA'); // YYYY-MM-DD, local time
+const yesterdayKey = () => { const d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); };
+const liveStreak = () => (state.lastDay === dayKey() || state.lastDay === yesterdayKey()) ? state.streak : 0;
+const doneToday = () => state.lastDay === dayKey() ? state.doneToday : [];
+const isOpen = i => !VIDEOS[i].comingSoon;
+const openCount = () => VIDEOS.filter(v => !v.comingSoon).length;
+
+function award(i) {
+  const v = VIDEOS[i], today = dayKey(), lines = [];
+  if (state.lastDay !== today) {
+    state.streak = state.lastDay === yesterdayKey() ? state.streak + 1 : 1;
+    state.lastDay = today; state.doneToday = [];
+    lines.push(['First groove today', S.dailyBonus]);
+    if (state.streak > 1) lines.push([`${state.streak}-day streak bonus`, Math.min(state.streak - 1, S.streakBonusCap) * S.streakBonusPerDay]);
+  }
+  if (!state.doneToday.includes(v.id)) {
+    state.doneToday.push(v.id);
+    lines.push(['Song complete', v.points]);
+    if (openCount() > 1 && state.doneToday.length === openCount()) lines.push(['Grooved every song today!', S.allDoneBonus]);
+  } else {
+    lines.push(['Replay', Math.round(v.points * S.replayFraction)]);
+  }
+  const gain = lines.reduce((t, [, p]) => t + p, 0);
+  state.points += gain;
+  state.bestStreak = Math.max(state.bestStreak, state.streak);
+  state.plays[v.id] = (state.plays[v.id] || 0) + 1;
+  save();
+  sendCrowns();
+  return { lines, gain };
+}
+
+/* ============================================================
+   HELPERS: screens, toast, sounds, music
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+let screen = 'splash', introSel = 1, menuSel = 0, current = -1;
+
+function show(id) { $$('.screen').forEach(el => el.classList.toggle('active', el.id === id)); screen = id; }
+
+let toastT;
+function toast(msg, ms = 2600) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms); }
+
+let actx;
+function blip(f, d = .07, type = 'triangle', vol = .08) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d);
+  } catch {}
+}
+const sfx = {
+  move:   () => blip(720),
+  select: () => { blip(523, .08); setTimeout(() => blip(784, .14), 70); },
+  back:   () => blip(330, .14),
+  deny:   () => { blip(196, .11, 'square', .06); setTimeout(() => blip(147, .2, 'square', .06), 120); },
+  score:  () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => blip(f, .16, 'square', .05), i * 90)),
+};
+
+/* ============================================================
+   MUSIC — two original tracks, synthesized live with Web Audio
+   'intro' = upbeat pop groove · 'menu' = chill ambient
+   ============================================================ */
+const Music = (() => {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  let ctx, master, noise, verb, delay, want = null;
+  const tracks = {};
+  let muted = false;
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+
+  /* ---------- instruments ---------- */
+  function kick(t, time, vol) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.setValueAtTime(150, time); o.frequency.exponentialRampToValueAtTime(45, time + .12);
+    g.gain.setValueAtTime(vol, time); g.gain.exponentialRampToValueAtTime(.001, time + .4);
+    o.connect(g).connect(t.bus); o.start(time); o.stop(time + .42);
+  }
+  function hit(t, time, { type = 'highpass', freq = 8000, q = .7, vol = .2, dec = .05 }) {
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noise; f.type = type; f.frequency.value = freq; f.Q.value = q;
+    g.gain.setValueAtTime(vol, time); g.gain.exponentialRampToValueAtTime(.001, time + dec);
+    s.connect(f).connect(g).connect(t.bus); s.start(time, Math.random() * .5); s.stop(time + dec + .02);
+  }
+  function clap(t, time, vol) {
+    [0, .011, .022].forEach(d => hit(t, time + d, { type: 'bandpass', freq: 1500, q: 1.2, vol: vol * .7, dec: .025 }));
+    hit(t, time + .03, { type: 'bandpass', freq: 1300, q: 1, vol, dec: .2 });
+  }
+  function synth(t, time, midi, dur, o = {}) {
+    const { type = 'sawtooth', vol = .1, a = .005, r = .1, dec = 0, cutoff = 3000, env = 0, q = .7,
+            voices = 1, detune = 8, echo = 0 } = o;
+    const hold = time + Math.max(dur, a), end = dec ? time + a + dec : hold + r;
+    const f = ctx.createBiquadFilter(), g = ctx.createGain();
+    f.type = 'lowpass'; f.Q.value = q;
+    f.frequency.setValueAtTime(cutoff + env, time);
+    if (env) f.frequency.exponentialRampToValueAtTime(cutoff, time + a + (dec || dur) * .8 + .01);
+    g.gain.setValueAtTime(.0001, time); g.gain.exponentialRampToValueAtTime(vol, time + a);
+    if (!dec) g.gain.setValueAtTime(vol, hold);
+    g.gain.exponentialRampToValueAtTime(.0001, end);
+    f.connect(g).connect(t.bus);
+    if (echo) { const e = ctx.createGain(); e.gain.value = echo; g.connect(e).connect(delay); }
+    for (let i = 0; i < voices; i++) {
+      const osc = ctx.createOscillator();
+      osc.type = type; osc.frequency.value = mtof(midi);
+      osc.detune.value = voices > 1 ? (i / (voices - 1) * 2 - 1) * detune : 0;
+      osc.connect(f); osc.start(time); osc.stop(end + .05);
+    }
+  }
+  function bell(t, time, midi, vol, echo = 0) {   // soft FM electric-piano / bell
+    const c = ctx.createOscillator(), m = ctx.createOscillator(), mg = ctx.createGain(), g = ctx.createGain(), f = mtof(midi);
+    c.frequency.value = f; m.frequency.value = f * 2;
+    mg.gain.setValueAtTime(f * 1.1, time); mg.gain.exponentialRampToValueAtTime(1, time + 1.4);
+    m.connect(mg).connect(c.frequency);
+    g.gain.setValueAtTime(.0001, time); g.gain.exponentialRampToValueAtTime(vol, time + .012);
+    g.gain.exponentialRampToValueAtTime(.0001, time + 2.8);
+    c.connect(g).connect(t.bus);
+    if (echo) { const e = ctx.createGain(); e.gain.value = echo; g.connect(e).connect(delay); }
+    c.start(time); m.start(time); c.stop(time + 2.9); m.stop(time + 2.9);
+  }
+
+  /* ---------- track 1: intro — bright, bouncy pop (C major, IV–V–iii–vi) ---------- */
+  const IC = [[41, [65, 69, 72]], [43, [67, 71, 74]], [40, [64, 67, 71]], [45, [69, 72, 76]]];
+  const LEAD = [ // [step, note, length in 16ths] per bar
+    [[0,72,3],[3,74,3],[6,76,2],[8,77,4],[12,76,2],[14,74,2]],
+    [[0,74,3],[3,76,3],[6,79,6],[12,77,2],[14,76,2]],
+    [[0,76,3],[3,74,3],[6,72,2],[8,71,4],[12,72,2],[14,74,2]],
+    [[0,76,6],[6,72,2],[8,69,8]],
+    [[0,77,2],[2,77,2],[4,76,2],[6,77,2],[8,81,4],[12,79,4]],
+    [[0,79,2],[2,77,2],[4,76,2],[6,74,2],[8,79,6],[14,77,2]],
+    [[0,76,3],[3,79,3],[6,83,2],[8,81,4],[12,79,4]],
+    [[0,81,10],[12,76,1],[13,79,1],[14,83,2]],
+  ];
+  const intro = { bpm: 122, bars: 16, reverb: .18, delay: 60 / 122 * .75, play(t, s, time, spb) {
+    const bar = Math.floor(s / 16), st = s % 16, [root, ch] = IC[bar % 4], lead = bar >= 8;
+    if (s === 0) hit(t, time, { freq: 5000, vol: .12, dec: 1.4 });                     // crash
+    if (st % 4 === 0) kick(t, time, .85);
+    if (st === 4 || st === 12) clap(t, time, .45);
+    if (bar % 8 === 7 && st >= 12) hit(t, time, { type: 'bandpass', freq: 1800, vol: .1 + (st - 12) * .06, dec: .08 }); // fill
+    if (st % 4 === 2) hit(t, time, { freq: 7500, vol: .16, dec: .14 });               // open hat
+    else if (st % 2 === 1) hit(t, time, { freq: 9000, vol: .06, dec: .03 });          // closed hat
+    if (st % 2 === 0) synth(t, time, root + (st % 4 === 2 ? 12 : 0), spb, { type: 'square', vol: .13, cutoff: 450, env: 1100, dec: .17 });
+    if (st % 4 === 2) ch.forEach(m => synth(t, time, m, spb, { vol: .035, cutoff: 1400, env: 2200, dec: .16, voices: 2 }));
+    synth(t, time, ch[[0, 1, 2, 1][st % 4]] + 12, spb, { type: 'square', vol: lead ? .02 : .035, cutoff: 2600, dec: .1, echo: .2 });
+    if (lead) { const n = LEAD[bar - 8].find(n => n[0] === st);
+      if (n) synth(t, time, n[1], n[2] * spb * .85, { vol: .065, a: .01, r: .12, cutoff: 2000, env: 2000, q: 2, voices: 3, detune: 11, echo: .25 }); }
+  }};
+
+  /* ---------- track 2: menu — slow dreamy ambient (Fmaj7–Em7–Dm7–Cmaj9) ---------- */
+  const MC = [[41, [53, 57, 60, 64]], [40, [52, 55, 59, 62]], [38, [50, 53, 57, 60]], [36, [48, 52, 55, 59, 62]]];
+  const BELLS = { 0: [3, 12], 6: [1, 24], 10: [2, 12], 16: [0, 24], 22: [3, 12], 27: [2, 24] };
+  const menu = { bpm: 72, bars: 8, reverb: .65, delay: 60 / 72 * .75, play(t, s, time, spb) {
+    const bar = Math.floor(s / 16), st = s % 16, pos = (bar % 2) * 16 + st, [root, ch] = MC[bar >> 1];
+    if (pos === 0) {
+      const len = spb * 31;
+      ch.forEach(m => synth(t, time, m, len, { vol: .03, a: 1.8, r: 2.5, cutoff: 750, q: .5, voices: 3, detune: 14 }));
+      synth(t, time, ch[ch.length - 1] + 12, len, { type: 'triangle', vol: .03, a: 2.5, r: 3, cutoff: 4000 });
+      synth(t, time, root, len, { type: 'sine', vol: .16, a: .9, r: 1.8, cutoff: 500 });
+    }
+    const b = BELLS[pos]; if (b) bell(t, time, ch[b[0] % ch.length] + b[1], .06, .35);
+    if (st === 0 || st === 10) kick(t, time, .2);
+    if (st % 4 === 2) hit(t, time, { freq: 6500, vol: .03, dec: .07 });               // soft shaker
+  }};
+
+  const DEFS = { intro, menu };
+
+  function init() {
+    if (ctx || !AC) return;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = muted ? 0 : S.musicVolume;
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4;
+    master.connect(comp).connect(ctx.destination);
+    noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const nd = noise.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    verb = ctx.createConvolver();
+    const len = ctx.sampleRate * 3.2, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3); }
+    verb.buffer = ir; verb.connect(master);
+    delay = ctx.createDelay(2);
+    const fb = ctx.createGain(), dOut = ctx.createGain(); fb.gain.value = .38; dOut.gain.value = .5;
+    delay.connect(fb).connect(delay); delay.connect(dOut); dOut.connect(master); dOut.connect(verb);
+    for (const [name, def] of Object.entries(DEFS)) {
+      const bus = ctx.createGain(), send = ctx.createGain();
+      bus.gain.value = 0; send.gain.value = def.reverb;
+      bus.connect(master); bus.connect(send).connect(verb);
+      tracks[name] = { def, bus, step: 0, next: 0, live: false };
+    }
+    ctx.onstatechange = () => onState && onState(running());
+    setInterval(tick, 25);
+  }
+
+  function tick() {
+    if (ctx.state !== 'running') return;
+    const now = ctx.currentTime;
+    for (const t of Object.values(tracks)) {
+      if (!t.live) continue;
+      const spb = 60 / t.def.bpm / 4;
+      if (t.next < now - .2) t.next = now + .05;                   // tab was asleep: don't pile up notes
+      while (t.next < now + .15) {
+        t.def.play(t, t.step, t.next, spb);
+        t.step = (t.step + 1) % (t.def.bars * 16);
+        t.next += spb;
+      }
+    }
+  }
+
+  function play(name, fade = 1.2) {
+    want = name;
+    init(); if (!ctx) return;
+    const now = ctx.currentTime;
+    for (const [n, t] of Object.entries(tracks)) {
+      const g = t.bus.gain;
+      g.cancelScheduledValues(now); g.setValueAtTime(g.value, now);
+      clearTimeout(t.off);
+      if (n === name) {
+        if (!t.live) { t.live = true; t.step = 0; t.next = now + .08; }
+        g.linearRampToValueAtTime(1, now + fade);
+        delay.delayTime.setTargetAtTime(t.def.delay, now, .05);
+      } else if (t.live) {
+        g.linearRampToValueAtTime(0, now + fade);
+        t.off = setTimeout(() => { if (want !== n) t.live = false; }, fade * 1000 + 200);
+      }
+    }
+  }
+
+  const running = () => !!ctx && ctx.state === 'running';
+  let onState = null;
+  return {
+    play, running,
+    get muted() { return muted; },
+    setMuted(on) { muted = on; if (master) master.gain.setTargetAtTime(on ? 0 : S.musicVolume, ctx.currentTime, .08); },
+    unlock() { init(); if (ctx && ctx.state !== 'running') ctx.resume(); },
+    onChange(fn) { onState = fn; fn(running()); },
+    supported: !!AC,
+  };
+})();
+// Browsers only allow sound after the first key press or click
+['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, () => Music.unlock(), { capture: true }));
+
+/* light streaks in the background */
+for (let i = 0; i < 14; i++) {
+  const d = document.createElement('div');
+  d.className = 'streak';
+  d.style.top = (12 + Math.random() * 76) + '%';
+  d.style.height = (Math.random() < .3 ? 3 : 1.5) + 'px';
+  d.style.width = (18 + Math.random() * 30) + 'vw';
+  d.style.animationDuration = (2.5 + Math.random() * 4) + 's';
+  d.style.animationDelay = (-Math.random() * 6) + 's';
+  $('#streaks').appendChild(d);
+}
+
+/* ============================================================
+   INTRO
+   ============================================================ */
+function renderIntro() {
+  $$('#intro .opt').forEach((el, i) => el.classList.toggle('sel', i === introSel));
+  $('#connectLabel').textContent = serialOK ? 'Buttons Connected ✓' : 'Connect Buttons';
+}
+$$('#intro .opt').forEach((el, i) => el.addEventListener('click', () => { introSel = i; input('enter'); }));
+
+/* ============================================================
+   MENU
+   ============================================================ */
+/* Ask for a fresh copy of the videos each time the page loads, so a stale cached copy can never block playback */
+// Only on this Mac (Live Server / launcher): online hosts like GitHub Pages can cache videos normally.
+const LOCAL = ['127.0.0.1', 'localhost'].includes(location.hostname);
+const FRESH = LOCAL ? '?v=' + Date.now() : '';
+
+function buildMenu() {
+  $('#menuList').innerHTML = VIDEOS.map((v, i) => v.comingSoon ? `
+    <div class="row locked" data-i="${i}">
+      <div class="stamp-wrap">
+        <span class="num">${i + 1}</span>
+        <div class="stamp"><div class="thumb">
+          <div class="soon">
+            <i class="sb sb1"></i><i class="sb sb2"></i><i class="sb sb3"></i>
+            <span class="soon-t">Coming Soon</span>
+            <span class="soon-s"><b>TO JUST GROOVE</b></span>
+          </div>
+        </div></div>
+      </div>
+      <div class="info">
+        <span class="pill"><svg class="lock" viewBox="0 0 20 22" aria-hidden="true"><path d="M5.5 9.5V7a4.5 4.5 0 0 1 9 0v2.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="2.5" y="9" width="15" height="11.5" rx="3" fill="currentColor"/><circle cx="10" cy="14.2" r="1.7" fill="#3b3f63"/><path d="M10 15v2.4" stroke="#3b3f63" stroke-width="1.6" stroke-linecap="round"/></svg>Locked<i class="arrow"></i></span>
+        <span class="artist">A new dance is on the way</span>
+      </div>
+    </div>` : `
+    <div class="row" data-i="${i}">
+      <div class="stamp-wrap">
+        <span class="num">${i + 1}</span>
+        <div class="stamp"><div class="thumb" style="--c:${v.color}">
+          <div class="ph">♪</div>
+          <video muted loop playsinline preload="metadata" ${v.thumb ? `poster="${v.thumb}"` : ''} src="${v.file}${FRESH}"></video>
+        </div></div>
+      </div>
+      <div class="info">
+        <span class="pill">${v.title}<i class="arrow"></i></span>
+        <span class="artist">${v.artist}</span>
+        <span class="meta"></span>
+      </div>
+    </div>`).join('');
+
+  $$('.row').forEach((row, i) => {
+    row.addEventListener('mouseenter', () => { if (menuSel !== i) { menuSel = i; sfx.move(); renderMenu(); } });
+    row.addEventListener('click', () => { menuSel = i; input('enter'); });
+    if (!isOpen(i)) return;           // locked: no preview video
+    const vid = row.querySelector('video');
+    // Loop the first few seconds from the very start. (Local servers like Live Server can't jump into
+    // the middle of a file, so seeking ahead would make the browser re-download the whole video.)
+    vid.addEventListener('error', () => vid.classList.add('missing'));
+    vid.addEventListener('timeupdate', () => { if (vid.currentTime > S.previewSeconds) vid.currentTime = 0; });
+  });
+}
+
+function renderMenu() {
+  const done = doneToday();
+  $$('.row').forEach((row, i) => {
+    const v = VIDEOS[i], isDone = done.includes(v.id);
+    row.classList.toggle('sel', i === menuSel);
+    if (v.comingSoon) return;
+    row.querySelector('.meta').innerHTML =
+      `<span class="stars">${'★'.repeat(v.difficulty)}${'☆'.repeat(Math.max(0, 3 - v.difficulty))}</span>` +
+      (isDone ? `<span class="pts done">✓ Grooved today · replay +${Math.round(v.points * S.replayFraction)} <svg class="crown" aria-hidden="true"><use href="#crown"/></svg></span>`
+              : `<span class="pts">+${v.points} <svg class="crown" aria-hidden="true"><use href="#crown"/></svg> crowns</span>`);
+  });
+  updatePreviews();
+
+  const streak = liveStreak();
+  $('#statPoints').textContent = state.points.toLocaleString();
+  $('#statStreak').textContent = streak + (streak ? ' 🔥' : '');
+  $('#statToday').textContent = `${done.length}/${openCount()}`;
+}
+
+function updatePreviews() {
+  $$('.row').forEach((row, i) => {
+    const vid = row.querySelector('video'); if (!vid) return;
+    if (screen === 'menu' && i === menuSel && !vid.classList.contains('missing')) vid.play().catch(() => {});
+    else vid.pause();
+  });
+}
+
+/* Locked song chosen: shake it and play a "denied" buzz */
+function deny(i) {
+  sfx.deny();
+  const row = $$('.row')[i];
+  if (row) { row.classList.remove('nope'); void row.offsetWidth; row.classList.add('nope'); }
+}
+
+function goMenu() {
+  clearTimeout(resultsTimer);
+  show('menu'); renderMenu();
+  Music.play('menu');
+}
+
+/* ============================================================
+   PLAYER
+   ============================================================ */
+const video = $('#video');
+let exitArmedUntil = 0, resultsTimer, startTimer, leaving = false;
+
+function play(i) {
+  current = i; leaving = false;
+  const v = VIDEOS[i];
+  exitArmedUntil = 0; $('#exitConfirm').classList.remove('show');
+  Music.play(null, .5);
+  show('player'); updatePreviews();
+  // its own address, so it never waits behind the menu preview's download of the same file
+  video.src = v.file + (LOCAL ? FRESH + '&play=' + Date.now() : '?play'); video.load();
+  powerOn();
+  clearTimeout(startTimer);
+  startTimer = setTimeout(() => { if (screen === 'player' && current === i && !leaving) startPlayback(); }, 750);
+}
+
+function startPlayback() {
+  video.muted = false; video.volume = 1;
+  video.play().catch(err => {
+    if (err.name === 'NotAllowedError') {          // browser blocked sound (no key press yet)
+      video.muted = true; video.play().catch(() => {});
+      toast('Sound was blocked by the browser. Click anywhere to unmute.', 4500);
+    }
+  });
+}
+document.addEventListener('click', () => { if (screen === 'player' && video.muted) video.muted = false; });
+
+/* CRT power on / off animations */
+function clearAnims(...els) { els.forEach(el => el.getAnimations().forEach(a => a.cancel())); }
+function powerOn() {
+  const tv = $('#tv'), pw = $('#power'), beam = $('#beam');
+  clearAnims(tv, pw, beam);
+  tv.animate([{ transform: 'translateY(5%) scale(.96)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+             { duration: 450, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  pw.animate([{ opacity: 1 }, { opacity: 1, offset: .55 }, { opacity: 0 }], { duration: 900, delay: 200, fill: 'both' });
+  beam.animate([{ transform: 'scale(0,1)', opacity: 1 }, { transform: 'scale(1,1)', opacity: 1, offset: .3 },
+                { transform: 'scale(1,80)', opacity: .9, offset: .6 }, { transform: 'scale(1,200)', opacity: 0 }],
+               { duration: 900, delay: 200, fill: 'both', easing: 'ease-out' });
+}
+function powerOff(done) {
+  const tv = $('#tv'), pw = $('#power'), beam = $('#beam');
+  clearAnims(tv, pw, beam);
+  video.pause();
+  pw.animate([{ opacity: 0 }, { opacity: 1, offset: .35 }, { opacity: 1 }], { duration: 650, fill: 'both' });
+  beam.animate([{ transform: 'scale(1,200)', opacity: 0 }, { transform: 'scale(1,1)', opacity: 1, offset: .35 },
+                { transform: 'scale(.02,1)', opacity: 1, offset: .75 }, { transform: 'scale(0,0)', opacity: 0 }],
+               { duration: 650, fill: 'both', easing: 'ease-in' });
+  tv.animate([{ opacity: 1 }, { opacity: 1, offset: .7 }, { opacity: 0, transform: 'translateY(3%) scale(.97)' }],
+             { duration: 800, fill: 'both' }).onfinish = () => { clearAnims(tv); done(); };
+}
+
+video.addEventListener('ended', () => { if (screen === 'player') finish(); });
+video.addEventListener('error', () => {
+  if (screen !== 'player' || !video.getAttribute('src')) return;
+  const f = VIDEOS[current].file;
+  clearTimeout(startTimer); leaving = false;
+  goMenu(); stopVideo();
+  toast(`Couldn't load "${f}". Check the file name in VIDEOS.`, 5000);
+});
+
+function stopVideo() { video.pause(); video.removeAttribute('src'); video.load(); }
+
+function requestExit() {
+  if (leaving) return;
+  const now = Date.now(), c = $('#exitConfirm');
+  if (S.exitConfirmMs <= 0 || now < exitArmedUntil) return exitVideo();
+  exitArmedUntil = now + S.exitConfirmMs;
+  c.classList.add('show'); sfx.back();
+  clearTimeout(c._t); c._t = setTimeout(() => c.classList.remove('show'), S.exitConfirmMs);
+}
+
+function exitVideo() {
+  if (leaving) return;
+  leaving = true; clearTimeout(startTimer);
+  $('#exitConfirm').classList.remove('show'); sfx.back();
+  powerOff(() => {
+    goMenu(); stopVideo(); leaving = false;
+    toast('No crowns this time. Finish a song to earn some!');
+  });
+}
+
+function finish() {
+  if (leaving) return;
+  leaving = true;
+  const r = award(current);
+  powerOff(() => { goResults(r); stopVideo(); leaving = false; });
+}
+
+/* ============================================================
+   RESULTS
+   ============================================================ */
+function goResults({ lines, gain }) {
+  show('results'); sfx.score(); Music.play('intro');
+  $('#resSong').textContent = VIDEOS[current].title;
+  $('#resLines').innerHTML = lines.map(([l, p], i) => `<li style="animation-delay:${.2 + i * .25}s"><span>${l}</span><b>+${p}</b></li>`).join('');
+  countUp($('#resGain'), gain);
+  $('#resTotal').textContent = state.points.toLocaleString();
+  $('#resStreak').textContent = state.streak;
+  const left = openCount() - state.doneToday.length;
+  $('#resTip').textContent = left > 0 ? `${left} more song${left > 1 ? 's' : ''} to go today · Press ENTER for menu`
+                                      : 'All done today. Come back tomorrow to grow your streak!';
+  clearTimeout(resultsTimer);
+  resultsTimer = setTimeout(() => { if (screen === 'results') goMenu(); }, S.resultsAutoReturnSec * 1000);
+}
+$('#results').addEventListener('click', () => input('enter'));
+
+function countUp(el, to) {
+  const t0 = performance.now(), dur = 1200;
+  (function step(t) {
+    const k = Math.min(1, (t - t0) / dur);
+    el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3)));
+    if (k < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+/* ============================================================
+   INPUT — every control (keyboard, mouse, Arduino) ends up here
+   ============================================================ */
+function input(cmd) {
+  switch (screen) {
+    case 'splash':
+      if (cmd === 'enter' && splashReady) { sfx.select(); show('intro'); Music.play('intro'); }
+      break;
+    case 'intro':
+      if (cmd === 'up' || cmd === 'down') { introSel = 1 - introSel; sfx.move(); renderIntro(); }
+      else if (cmd === 'enter') { sfx.select(); introSel === 0 ? connectSerial() : goMenu(); }
+      break;
+    case 'menu':
+      if (cmd === 'up')   { menuSel = (menuSel + VIDEOS.length - 1) % VIDEOS.length; sfx.move(); renderMenu(); }
+      if (cmd === 'down') { menuSel = (menuSel + 1) % VIDEOS.length; sfx.move(); renderMenu(); }
+      if (cmd === 'enter') { if (isOpen(menuSel)) { sfx.select(); play(menuSel); } else deny(menuSel); }
+      break;
+    case 'player':
+      if (cmd === 'enter') requestExit();
+      break;
+    case 'results':
+      if (cmd === 'enter') { sfx.select(); goMenu(); }
+      break;
+  }
+}
+
+/* Keyboard (for testing without the Arduino) */
+addEventListener('keydown', e => {
+  if (e.repeat) return;
+  const k = e.key;
+  if (k === 'ArrowUp' || k === 'w')          { e.preventDefault(); input('up'); }
+  else if (k === 'ArrowDown' || k === 's')   { e.preventDefault(); input('down'); }
+  else if (k === 'Enter' || k === ' ')       { e.preventDefault(); input('enter'); }
+  else if (k === 'Escape' && screen === 'player') exitVideo();
+  else if (k === 'c')                        connectSerial();
+  else if (k === ']' && screen === 'player' && video.duration) video.currentTime = Math.max(0, video.duration - 3); // test: skip to end
+  else if (k === 'R' && e.shiftKey && screen === 'menu') {
+    if (confirm('Reset all Just Groove crowns and streak?')) { state = fresh(); save(); renderMenu(); sendCrowns(); toast('Progress reset'); }
+  }
+});
+
+/* ============================================================
+   ARDUINO — Web Serial (Chrome / Edge)
+   The Arduino sends one word per line: UP, DOWN, or ENTER
+   ============================================================ */
+let port = null, serialOK = false;
+const CMD = { UP:'up', U:'up', DOWN:'down', D:'down', ENTER:'enter', E:'enter', SELECT:'enter', OK:'enter' };
+
+function setSerial(ok) {
+  serialOK = ok;
+  renderIntro();
+}
+
+async function connectSerial() {
+  if (!('serial' in navigator)) { toast('This browser can\'t talk to the Arduino. Open this page in Chrome or Edge.', 4500); return; }
+  if (serialOK) { introSel = 0; renderIntro(); toast('Buttons already connected ✓'); return; }
+  // Chrome lists ports by name. Pick "usbmodem64E8335CCCB02" (your Nano). Only needed once; after that it reconnects on its own.
+  try { await openPort(await navigator.serial.requestPort()); }
+  catch (e) { if (e.name !== 'NotFoundError') { console.warn('[Just Groove] Could not open the port:', e); toast('Couldn\'t open the port. Close the Arduino Serial Monitor and any other Just Groove window, then try again.', 6000); } }
+}
+
+async function openPort(p) {
+  port = p;
+  await port.open({ baudRate: S.baudRate });
+  // Some Nano boards only send serial data once the computer signals it's listening
+  try { await port.setSignals({ dataTerminalReady: true, requestToSend: true }); } catch {}
+  setSerial(true);
+  toast('Buttons connected ✓');
+  if (screen === 'intro') { introSel = 1; renderIntro(); }
+  readLoop();
+  // The Nano restarts when the port opens, so give it a moment before sending the crown total
+  setTimeout(sendCrowns, 2500);
+}
+
+/* Send the crown total to the Arduino's 4-digit display: just the number and a newline, e.g. "150". Capped at 9999 (4 digits). */
+async function sendCrowns() {
+  if (!serialOK || !port || !port.writable || port.writable.locked) return;
+  const w = port.writable.getWriter();
+  try { await w.write(new TextEncoder().encode(`${Math.min(state.points, 9999)}\n`)); }
+  catch (e) { console.warn('[Just Groove] Could not send crowns to the Arduino:', e); }
+  finally { w.releaseLock(); }
+}
+setInterval(sendCrowns, 10000);   // resend now and then, in case the Arduino was reset or replugged
+
+async function readLoop() {
+  const decoder = new TextDecoderStream();
+  const piped = port.readable.pipeTo(decoder.writable).catch(() => {});
+  const reader = decoder.readable.getReader();
+  let buf = '';
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += value;
+      const lines = buf.split(/\r?\n/); buf = lines.pop();
+      for (const line of lines) {
+        const text = line.trim(); if (!text) continue;
+        const c = CMD[text.toUpperCase()];
+        console.log('[Just Groove] Arduino sent:', JSON.stringify(text), c ? '→ ' + c : '(not a command)');
+        if (c) input(c);
+        else toast(`Arduino sent "${text.slice(0, 24)}", expected UP, DOWN or ENTER`, 3000);
+      }
+    }
+  } catch {} finally {
+    try { await reader.cancel(); } catch {}
+    reader.releaseLock();
+    await piped;
+    try { await port.close(); } catch {}
+    setSerial(false);
+    toast('Buttons disconnected. Plug the Arduino back in to reconnect.', 4500);
+  }
+}
+
+if ('serial' in navigator) {
+  // Reconnect automatically to a board this page was already allowed to use
+  const busy = e => {
+    console.warn('[Just Groove] Could not open the Arduino port:', e);
+    toast('Found the buttons, but another program is using them. Close the Arduino Serial Monitor and any other Just Groove window, then unplug and replug the Arduino.', 7000);
+  };
+  navigator.serial.getPorts().then(ps => {
+    if (!ps.length) { console.log('[Just Groove] No paired Arduino yet. Choose "Connect Buttons" with the keyboard.'); return; }
+    if (!serialOK) openPort(ps[0]).catch(busy);
+  });
+  navigator.serial.addEventListener('connect', e => { if (!serialOK) openPort(e.target).catch(busy); });
+}
+
+/* ============================================================
+   START
+   ============================================================ */
+buildMenu();
+renderIntro();
+
+/* Mute button (bottom of each screen); remembered between visits */
+const MUTE_KEY = 'justgroove.muted';
+const ICON_ON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const ICON_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function renderMute() {
+  $$('.mute-btn').forEach(b => {
+    b.innerHTML = Music.muted ? ICON_OFF : ICON_ON;
+    b.title = Music.muted ? 'Turn music on' : 'Mute music';
+    b.setAttribute('aria-label', b.title);
+    b.setAttribute('aria-pressed', Music.muted);
+  });
+}
+function toggleMute() {
+  Music.setMuted(!Music.muted);
+  try { localStorage.setItem(MUTE_KEY, Music.muted ? '1' : '0'); } catch {}
+  renderMute();
+}
+$$('.mute-btn').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); toggleMute(); b.blur(); }));
+try { Music.setMuted(localStorage.getItem(MUTE_KEY) === '1'); } catch {}
+renderMute();
+
+/* Splash: fill the loading bar while fonts load (at least 1.4 s), then ask for Enter */
+let splashReady = false;
+$('#splash').addEventListener('click', () => input('enter'));
+(async () => {
+  const t0 = performance.now(), MIN = 1400, fill = $('#spFill');
+  const anim = setInterval(() => { fill.style.width = Math.min(90, (performance.now() - t0) / MIN * 90) + '%'; }, 50);
+  await Promise.all([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, MIN))]);
+  clearInterval(anim); fill.style.width = '100%';
+  setTimeout(() => { splashReady = true; $('.splash').classList.add('ready'); }, 300);
+})();
+</script>
+</body>
+</html>

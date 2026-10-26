@@ -1,0 +1,6 @@
+# Files GitHub should skip
+.DS_Store
+videos/.parts/
+videos/song1.mp4
+videos/*.mov
+videos/sunshine.mp4
